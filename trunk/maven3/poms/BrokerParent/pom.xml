@@ -1,0 +1,148 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.rsb.broker</groupId>
+  <version>1.0.0</version>
+  <artifactId>BrokerParent</artifactId>
+  <packaging>pom</packaging>
+  <name>rsb Broker Project</name>
+  <modules>
+    <module>01_PrepareEnv</module>
+    <module>02_BuildMessageFlows</module>
+    <module>03_CopyToLatestBuild</module>
+	<module>04_DeployServices</module>
+  </modules>
+  <properties>
+	<clearcase.view.location>${env.clearcase.view.location}</clearcase.view.location>
+    <build.outputdir>${env.build.outputdir}</build.outputdir>
+    <build.target>${env.build.target}</build.target>
+   <build.latest>${env.build.latest}</build.latest>
+    <maven.build.timestamp.format>
+    yyyyMMdd-HHmm</maven.build.timestamp.format>
+  </properties>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.2</version>
+          <inherited>false</inherited>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-scm-plugin</artifactId>
+          <version>1.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.4.1</version>
+        </plugin>
+        <plugin>
+          <groupId>com.rsb.broker</groupId>
+          <artifactId>maven-rsb-wmb-createbar</artifactId>
+          <executions>
+            <execution>
+			  <id>createbar</id>
+              <phase>package</phase>
+              <goals>
+                <goal>createbar</goal>
+              </goals>
+            </execution>
+          </executions>          
+		  <configuration>
+            <workspaceTarget>
+				${build.outputdir}
+			</workspaceTarget>
+			<mqsicreatebarLocation>${env.mqsicreatebarLocation}</mqsicreatebarLocation>
+			<verboseMode>false</verboseMode>
+          </configuration>
+        </plugin>
+		<plugin>
+          <groupId>com.rsb.broker</groupId>
+          <artifactId>maven-rsb-wmb-overridebar</artifactId>
+          <executions>
+            <execution>
+			  <id>overridebar</id>
+              <phase>integration-test</phase>
+              <goals>
+                <goal>overridebar</goal>
+              </goals>
+            </execution>
+          </executions>          
+		  <configuration>
+     	   <outputFileSuffix>_${env.id}</outputFileSuffix>
+			<mqsiapplybaroverrideLocation>${env.mqsiapplybaroverrideLocation}</mqsiapplybaroverrideLocation>
+			<overridesFile>${build.target}${env.FileSep}environment.properties${env.FileSep}${artifactId}_${env.id}_BAR_Overrides.properties</overridesFile>
+			</configuration>
+        </plugin>
+		<plugin>
+          <groupId>com.rsb.broker</groupId>
+          <artifactId>maven-rsb-wmb-deploybar</artifactId>
+          <executions>
+            <execution>
+			  <id>deploybar</id>
+              <phase>integration-test</phase>
+              <goals>
+                <goal>deploybar</goal>
+              </goals>
+            </execution>
+          </executions>          
+		  <configuration>
+            <workspaceTarget>
+				${build.outputdir}
+			</workspaceTarget>
+			<hostname>${env.hostname}</hostname>
+			<port>${env.port}</port>
+			<queueManager>${env.queueManager}</queueManager>
+			<brokerName>${env.brokerName}</brokerName>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+    <!-- #################################### -->
+	<!-- Environment specific profiles -->
+	<!-- #################################### -->
+	<profiles>
+		<profile>
+		<!-- ################################################################################ -->
+		<!-- This is the default "local" profile user by developers on an windows environment -->
+		<!-- ################################################################################ -->
+			<id>local</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<!-- id for build, used in filenames for bar file overrides -->
+				<env.id>DEV</env.id>
+				<env.FileSep>\</env.FileSep>
+				<!-- location of clearcase view where all VOB's reside -->
+				<env.clearcase.view.location>C:\ClearCase\wmb_view</env.clearcase.view.location>
+				<!-- Eclipse workspace for build, this dir will be deleted during each build -->
+				<env.build.outputdir>C:\WS\wmb\mavenworkspace</env.build.outputdir>
+				<!-- directory where builds are created, a new dir named by timestamp will be added each build -->
+				<env.build.target>C:\WS\wmb\brokerbuilds</env.build.target>
+				<!-- once all bar files are created they are copied to the dir specified below -->
+				<env.build.latest>C:\WS\wmb\brokerbuilds\latest</env.build.latest>
+				<!-- details for config manager/broker to deploy to -->
+				<env.hostname>localhost</env.hostname>
+				<env.port>2414</env.port>
+				<env.queueManager>WBRK61_DEFAULT_QUEUE_MANAGER</env.queueManager>
+				<env.brokerName>WBRK61_DEFAULT_BROKER</env.brokerName>
+				<!-- location of wmb toolkit commands -->
+				<env.mqsicreatebarLocation>C:\Program Files\IBM\WMBT610\mqsicreatebar</env.mqsicreatebarLocation>
+				<env.mqsiapplybaroverrideLocation>C:\Program Files\IBM\WMBT610\mqsiapplybaroverride</env.mqsiapplybaroverrideLocation>
+			</properties>
+		</profile>
+
+		</profiles>
+</project>
