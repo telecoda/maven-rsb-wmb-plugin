@@ -2,7 +2,7 @@ package com.rsb.wmb.createbar;
 
 
 /*
- * Copyright 2010 
+ * Copyright 2010
  *
  * by Rob Baines
  * 
@@ -110,6 +110,7 @@ public class WmbCreateBarMojo
 		String sourceBarSuffix;
 		String failureMessage="";
 		
+		
 		// validate mandatory parameters and throw exception if they do not exist
 		if (getMqsicreatebarlocation() == null || getMqsicreatebarlocation().length() == 0)
 			throw new MojoFailureException("Missing mqsicreatebarLocation value.");
@@ -130,7 +131,7 @@ public class WmbCreateBarMojo
 		String mainProject = wmbProject;
 		String barFile = getName();
 		// get dependent projects for main project
-		List<String> depprojectnames = myWorkspace.getDependencies(mainProject);
+		List<String> depprojectnames = myWorkspace.getDependencies(mainProject, 1);
 		// combine main project with dependencies
 		List<String> allProjects = new ArrayList<String>(depprojectnames);
 		allProjects.add(mainProject);
@@ -229,7 +230,7 @@ public class WmbCreateBarMojo
 			
 			out.write(failureMessage); out.close();
 			sourceBarSuffix = "-[FAILED].bar";
-			// rezip all artifacts and source into a single new file
+//			 rezip all artifacts and source into a single new file
 			String barWithSource = barFile.replace(".bar", sourceBarSuffix);
 			this.zipBar(barWithSource,tempFilesLocation);
 			// create bar file
