@@ -1,0 +1,19 @@
+  <project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.rsb.broker</groupId>
+		<version>1.0.0</version>
+		<artifactId>BrokerParent</artifactId> 
+		
+	</parent>
+	<artifactId>02_BuildMessageFlows</artifactId>
+	<version>01.00</version>
+	<name>02_BuildMessageFlows</name>
+	<packaging>pom</packaging>
+	<!-- add a module name here for each service to build-->
+	<!-- each service with have its own directory with its own pom.xml -->
+	<modules>
+		<module>MessageFlowProject1</module>
+		<module>MessageFlowProject2</module>
+  </modules>
+</project>

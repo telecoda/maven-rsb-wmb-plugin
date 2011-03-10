@@ -1,0 +1,55 @@
+  <project>
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.rsb.broker</groupId>
+		<version>1.0.0</version>
+		<artifactId>BrokerParent</artifactId> 
+	</parent>
+	<artifactId>01_PrepareEnv</artifactId>
+	<version>01.00</version>
+	<name>01_PrepareEnv</name>
+	<build>
+		<plugins>
+		<plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>validate</phase>
+            <configuration>
+              <tasks>
+		<delete dir="${build.outputdir}" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+		<plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.4.3</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+        
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+		<!-- used to flatten directories split but stupid VOB setup in clearcase! -->
+              <outputDirectory>${build.outputdir}</outputDirectory>
+              <resources>          
+                <resource>
+                  <directory>${clearcase.view.location}${env.FileSep}vob_name here..</directory>
+                  <filtering>false</filtering>
+                </resource>
+              </resources>              
+            </configuration>            
+          </execution>
+        </executions>
+      </plugin> 
+		</plugins>
+	</build>
+</project>
